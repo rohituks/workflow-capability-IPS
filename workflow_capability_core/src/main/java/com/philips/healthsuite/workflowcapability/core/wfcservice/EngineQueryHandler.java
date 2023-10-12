@@ -39,9 +39,11 @@ public class EngineQueryHandler {
 
             // Extract CRUD Operator
             String[] crudOperationSplit = query.split(":");
+            /*
             if (crudOperationSplit.length != 2) {
                 throw new IncorrectQueryException("Multiple : used");
             }
+            */
             String crudOperation = crudOperationSplit[0];
             query = crudOperationSplit[1];
 
@@ -59,6 +61,9 @@ public class EngineQueryHandler {
 
             if (crudOperation.equals("FHIR(GET)")) {
                 return getFhirObject(fhirResource, query, parser);
+            }
+            if (crudOperation.equals("FHIR(GETBUNDLE)")) {
+                return getFhirDerivedObservations(fhirResource, query, parser);
             }
             if (crudOperation.equals("FHIR(SUBSCRIBE)")) {
                 subscribeToFhirObject(fhirResource, query, parser, processID, returnMessage, variableName);
@@ -102,6 +107,33 @@ public class EngineQueryHandler {
     }
 
 
+    private Bundle getFhirDerivedObservations(String fhirResource, String query, IParser parser) {
+        String baseUrl = properties.get("config.fhirUrl") + "/fhir/";
+        Bundle derivedBundleResult = new Bundle();
+    
+        // First, fetch the primary resources based on your initial query
+        HttpResponse<JsonNode> primaryResponse = Unirest.get(baseUrl + fhirResource + "?" + query).asJson();
+        Bundle primaryBundle = (Bundle) parser.parseResource(primaryResponse.getBody().toString());
+    
+        // Check if primary bundle has entries
+        if (primaryBundle.hasEntry()) {
+            for (Bundle.BundleEntryComponent entry : primaryBundle.getEntry()) {
+                Resource resource = entry.getResource();
+                String resourceId = resource.getIdElement().getIdPart();
+    
+                // For each resource, fetch derived resources using "derived-from" field
+                String derivedQuery = "derived-from=" + resourceId;
+                HttpResponse<JsonNode> derivedResponse = Unirest.get(baseUrl + fhirResource + "?" + derivedQuery).asJson();
+                Bundle secondaryDerivedBundle = (Bundle) parser.parseResource(derivedResponse.getBody().toString());
+    
+                // Add derived resources to the result bundle
+                derivedBundleResult.getEntry().addAll(secondaryDerivedBundle.getEntry());
+            }
+        }
+        derivedBundleResult.setTotal(derivedBundleResult.getEntry().size());
+        return derivedBundleResult;
+    }
+    
     private Resource getFhirObject(String fhirResource, String query, IParser parser) {
         HttpResponse<JsonNode> httpResponse = Unirest.get(properties.get("config.fhirUrl") + "/fhir/" +
                         fhirResource + "?" + query)
@@ -109,6 +141,7 @@ public class EngineQueryHandler {
 
         Bundle bundle = (Bundle) parser.parseResource(httpResponse.getBody().toString());
         Resource resource = null;
+        System.out.println("QUERY: " + query);
         if (bundle.hasEntry()) {
             resource = new FhirDataResources(properties.get("config.fhirUrl") + "/fhir/").getFirstBundleEntry(bundle);
             System.out.println("RESOURCE: " + resource.getId());
