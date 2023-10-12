@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0if1hqf" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.15.2" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.19.0">
+  <bpmn:process id="MetAlkFusion" name="initialprocess" isExecutable="true" camunda:historyTimeToLive="15">
+    <bpmn:startEvent id="StartEvent_1" name="Start">
+      <bpmn:outgoing>Flow_15b0fzc</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:dataObjectReference id="DataObjectReference_0lhhwsr" name="geneticvariantsObservations" dataObjectRef="DataObject_0il8k4w">
+      <bpmn:documentation>FHIR(GET):Observation?patient=$(patient)&amp;code=69548-6&amp;component-value-concept=HGNC%3A7029,HGNC%3A427</bpmn:documentation>
+    </bpmn:dataObjectReference>
+    <bpmn:dataObject id="DataObject_0il8k4w" />
+    <bpmn:receiveTask id="ExtractGenes" name="Extract Genomic Alterations from FHIR Data" messageRef="Message_03vkgpf">
+      <bpmn:extensionElements />
+      <bpmn:incoming>Flow_0ikn5pn</bpmn:incoming>
+      <bpmn:outgoing>Flow_1r2s805</bpmn:outgoing>
+      <bpmn:property id="Property_13g5xrh" name="__targetRef_placeholder" />
+      <bpmn:dataInputAssociation id="DataInputAssociation_1pywqxt">
+        <bpmn:sourceRef>DataObjectReference_0lhhwsr</bpmn:sourceRef>
+        <bpmn:targetRef>Property_13g5xrh</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+    </bpmn:receiveTask>
+    <bpmn:sequenceFlow id="Flow_15b0fzc" sourceRef="StartEvent_1" targetRef="Activity_0txvqxk" />
+    <bpmn:endEvent id="Event_1lh4sw2" name="End">
+      <bpmn:incoming>Flow_05645w8</bpmn:incoming>
+      <bpmn:incoming>Flow_10ihgcs</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0ikn5pn" sourceRef="Activity_0txvqxk" targetRef="ExtractGenes" />
+    <bpmn:serviceTask id="Activity_0txvqxk" name="time since start" camunda:expression="{0}" camunda:resultVariable="timesincestart">
+      <bpmn:incoming>Flow_15b0fzc</bpmn:incoming>
+      <bpmn:outgoing>Flow_0ikn5pn</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1hnpesp" sourceRef="Activity_08n4abw" targetRef="Activity_1ws64w0" />
+    <bpmn:exclusiveGateway id="Gateway_1lfd4y2">
+      <bpmn:incoming>Flow_0iygj2h</bpmn:incoming>
+      <bpmn:outgoing>Flow_1svaolx</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0bc1d5z</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_1r2s805" sourceRef="ExtractGenes" targetRef="Activity_09bpysy" />
+    <bpmn:sequenceFlow id="Flow_1svaolx" sourceRef="Gateway_1lfd4y2" targetRef="Activity_08n4abw">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${execution.getVariable('isPresent') == true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0bc1d5z" sourceRef="Gateway_1lfd4y2" targetRef="Activity_0g28doz">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${execution.getVariable('isPresent') == false}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0lwqnp0" sourceRef="Activity_0g28doz" targetRef="Activity_1alfpyv" />
+    <bpmn:userTask id="Activity_0g28doz" name="False Case">
+      <bpmn:incoming>Flow_0bc1d5z</bpmn:incoming>
+      <bpmn:outgoing>Flow_0lwqnp0</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_0iygj2h" sourceRef="Activity_09bpysy" targetRef="Gateway_1lfd4y2" />
+    <bpmn:businessRuleTask id="Activity_09bpysy" name="Check for MET ALK Gene" camunda:resultVariable="isPresent" camunda:decisionRef="geneCheck" camunda:mapDecisionResult="singleEntry">
+      <bpmn:incoming>Flow_1r2s805</bpmn:incoming>
+      <bpmn:outgoing>Flow_0iygj2h</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+    <bpmn:sequenceFlow id="Flow_0z109uv" sourceRef="Activity_1ws64w0" targetRef="Activity_0zp7lyj" />
+    <bpmn:userTask id="Activity_08n4abw" name="True Case ">
+      <bpmn:incoming>Flow_1svaolx</bpmn:incoming>
+      <bpmn:outgoing>Flow_1hnpesp</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="Activity_1ws64w0" name="getObservationId" camunda:expression="${S(geneticvariantsObservations).prop(&#34;id&#34;).stringValue()}" camunda:resultVariable="observationId">
+      <bpmn:incoming>Flow_1hnpesp</bpmn:incoming>
+      <bpmn:outgoing>Flow_0z109uv</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="Activity_03axa7r" name="Nurse check Patient" camunda:formRef="" camunda:formRefBinding="latest">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="Input_304nvah">${S(geneticvariantsObservations).prop("id").stringValue()}</camunda:inputParameter>
+          <camunda:outputParameter name="Output_255le9g">${S(geneticvariantsObservations).prop("resourceType").stringValue()}</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0q42ew0</bpmn:incoming>
+      <bpmn:outgoing>Flow_1i8wz7h</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_09uiqh3" sourceRef="Activity_0zp7lyj" targetRef="Activity_0xxk5a4" />
+    <bpmn:dataObjectReference id="DataObjectReference_1by150t" name="getTherapeuticImplications" dataObjectRef="DataObject_05chv2u">
+      <bpmn:documentation>FHIR(GETBUNDLE):Observation?patient=$(patient)&amp;code=69548-6&amp;component-value-concept=HGNC%3A7029,HGNC%3A427</bpmn:documentation>
+      <bpmn:extensionElements />
+    </bpmn:dataObjectReference>
+    <bpmn:dataObject id="DataObject_05chv2u" />
+    <bpmn:receiveTask id="Activity_0zp7lyj" name="Get all Therapeutic Implications" messageRef="Message_2u26fd6">
+      <bpmn:incoming>Flow_0z109uv</bpmn:incoming>
+      <bpmn:outgoing>Flow_09uiqh3</bpmn:outgoing>
+      <bpmn:property id="Property_0e5khv7" name="__targetRef_placeholder" />
+      <bpmn:dataInputAssociation id="DataInputAssociation_1f0bx2z">
+        <bpmn:sourceRef>DataObjectReference_1by150t</bpmn:sourceRef>
+        <bpmn:targetRef>Property_0e5khv7</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+    </bpmn:receiveTask>
+    <bpmn:sequenceFlow id="Flow_05645w8" sourceRef="Activity_069kvmh" targetRef="Event_1lh4sw2" />
+    <bpmn:userTask id="Activity_069kvmh" name="Third and Final Halt">
+      <bpmn:incoming>Flow_1i8wz7h</bpmn:incoming>
+      <bpmn:outgoing>Flow_05645w8</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_1i8wz7h" sourceRef="Activity_03axa7r" targetRef="Activity_069kvmh" />
+    <bpmn:sequenceFlow id="Flow_02hjibm" sourceRef="Activity_0xxk5a4" targetRef="Activity_12irzzb" />
+    <bpmn:serviceTask id="Activity_0xxk5a4" name="Setting service task" camunda:expression="${S(getTherapeuticImplications)}" camunda:resultVariable="therapeuticimplications">
+      <bpmn:incoming>Flow_09uiqh3</bpmn:incoming>
+      <bpmn:outgoing>Flow_02hjibm</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:callActivity id="Activity_1ipkanj" name="Treatment Plan fot Genomic Variant Met-ALK fusion" calledElement="treatmentA">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="theraptuticImplicationsMetAlk">${S(getTherapeuticImplications)}</camunda:inputParameter>
+          <camunda:outputParameter name="Output_3s7mt9r" />
+        </camunda:inputOutput>
+        <camunda:in source="therapeuticimplications" target="therapies" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_05g2pjh</bpmn:incoming>
+      <bpmn:outgoing>Flow_0q42ew0</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:sequenceFlow id="Flow_0q42ew0" sourceRef="Activity_1ipkanj" targetRef="Activity_03axa7r" />
+    <bpmn:sequenceFlow id="Flow_05g2pjh" sourceRef="Activity_12irzzb" targetRef="Activity_1ipkanj" />
+    <bpmn:userTask id="Activity_12irzzb" name="Check the medication">
+      <bpmn:incoming>Flow_02hjibm</bpmn:incoming>
+      <bpmn:outgoing>Flow_05g2pjh</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_10ihgcs" sourceRef="Activity_1alfpyv" targetRef="Event_1lh4sw2" />
+    <bpmn:businessRuleTask id="Activity_1alfpyv" name="Check for ROS1 Alteration">
+      <bpmn:incoming>Flow_0lwqnp0</bpmn:incoming>
+      <bpmn:outgoing>Flow_10ihgcs</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+  </bpmn:process>
+  <bpmn:message id="Message_3eie1ln" name="Get Genomic Vairants Observations" />
+  <bpmn:message id="Message_27jmrv9" name="metalkfusionPresent" />
+  <bpmn:message id="Message_1lmsib1" name="bloodLossVariableMessage" />
+  <bpmn:message id="Message_1p0ltf1" name="therapeuticObservations" />
+  <bpmn:message id="Message_03vkgpf" name="Message_03vkgpf" />
+  <bpmn:message id="Message_2u26fd6" name="Message_2u26fd6" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="MetAlkFusion">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="172" y="339" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="179" y="382" width="24" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataObjectReference_0lhhwsr_di" bpmnElement="DataObjectReference_0lhhwsr">
+        <dc:Bounds x="512" y="115" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="485" y="78" width="89" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_16dvesn_di" bpmnElement="ExtractGenes">
+        <dc:Bounds x="480" y="317" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1lh4sw2_di" bpmnElement="Event_1lh4sw2">
+        <dc:Bounds x="2302" y="339" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2310" y="382" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_130x9e2_di" bpmnElement="Activity_0txvqxk">
+        <dc:Bounds x="300" y="317" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1lfd4y2_di" bpmnElement="Gateway_1lfd4y2" isMarkerVisible="true">
+        <dc:Bounds x="885" y="332" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0118rte_di" bpmnElement="Activity_0g28doz">
+        <dc:Bounds x="1060" y="430" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0bgeoka_di" bpmnElement="Activity_09bpysy">
+        <dc:Bounds x="670" y="317" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_11taw0e_di" bpmnElement="Activity_08n4abw">
+        <dc:Bounds x="980" y="317" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1bg1yqt_di" bpmnElement="Activity_1ws64w0">
+        <dc:Bounds x="1140" y="317" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataObjectReference_1by150t_di" bpmnElement="DataObjectReference_1by150t">
+        <dc:Bounds x="1342" y="115" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1320" y="85" width="86" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1lz898x_di" bpmnElement="Activity_0zp7lyj">
+        <dc:Bounds x="1310" y="317" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1xdtp2s_di" bpmnElement="Activity_069kvmh">
+        <dc:Bounds x="2070" y="317" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1k3iddi_di" bpmnElement="Activity_0xxk5a4">
+        <dc:Bounds x="1450" y="317" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1en01et_di" bpmnElement="Activity_03axa7r">
+        <dc:Bounds x="1890" y="317" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1ipkanj_di" bpmnElement="Activity_1ipkanj">
+        <dc:Bounds x="1720" y="317" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_03ot20f_di" bpmnElement="Activity_12irzzb">
+        <dc:Bounds x="1580" y="317" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1ofxbra_di" bpmnElement="Activity_1alfpyv">
+        <dc:Bounds x="1290" y="430" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="DataInputAssociation_1pywqxt_di" bpmnElement="DataInputAssociation_1pywqxt">
+        <di:waypoint x="530" y="165" />
+        <di:waypoint x="530" y="317" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_15b0fzc_di" bpmnElement="Flow_15b0fzc">
+        <di:waypoint x="208" y="357" />
+        <di:waypoint x="300" y="357" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ikn5pn_di" bpmnElement="Flow_0ikn5pn">
+        <di:waypoint x="400" y="357" />
+        <di:waypoint x="480" y="357" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1hnpesp_di" bpmnElement="Flow_1hnpesp">
+        <di:waypoint x="1080" y="357" />
+        <di:waypoint x="1140" y="357" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1r2s805_di" bpmnElement="Flow_1r2s805">
+        <di:waypoint x="580" y="357" />
+        <di:waypoint x="670" y="357" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1svaolx_di" bpmnElement="Flow_1svaolx">
+        <di:waypoint x="935" y="357" />
+        <di:waypoint x="980" y="357" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0bc1d5z_di" bpmnElement="Flow_0bc1d5z">
+        <di:waypoint x="910" y="382" />
+        <di:waypoint x="910" y="470" />
+        <di:waypoint x="1060" y="470" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0lwqnp0_di" bpmnElement="Flow_0lwqnp0">
+        <di:waypoint x="1160" y="470" />
+        <di:waypoint x="1290" y="470" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0iygj2h_di" bpmnElement="Flow_0iygj2h">
+        <di:waypoint x="770" y="357" />
+        <di:waypoint x="885" y="357" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0z109uv_di" bpmnElement="Flow_0z109uv">
+        <di:waypoint x="1240" y="357" />
+        <di:waypoint x="1310" y="357" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_09uiqh3_di" bpmnElement="Flow_09uiqh3">
+        <di:waypoint x="1410" y="357" />
+        <di:waypoint x="1450" y="357" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataInputAssociation_1f0bx2z_di" bpmnElement="DataInputAssociation_1f0bx2z">
+        <di:waypoint x="1360" y="165" />
+        <di:waypoint x="1360" y="317" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_05645w8_di" bpmnElement="Flow_05645w8">
+        <di:waypoint x="2170" y="357" />
+        <di:waypoint x="2302" y="357" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1i8wz7h_di" bpmnElement="Flow_1i8wz7h">
+        <di:waypoint x="1990" y="357" />
+        <di:waypoint x="2070" y="357" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_02hjibm_di" bpmnElement="Flow_02hjibm">
+        <di:waypoint x="1550" y="357" />
+        <di:waypoint x="1580" y="357" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0q42ew0_di" bpmnElement="Flow_0q42ew0">
+        <di:waypoint x="1820" y="357" />
+        <di:waypoint x="1890" y="357" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_05g2pjh_di" bpmnElement="Flow_05g2pjh">
+        <di:waypoint x="1680" y="357" />
+        <di:waypoint x="1720" y="357" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_10ihgcs_di" bpmnElement="Flow_10ihgcs">
+        <di:waypoint x="1390" y="470" />
+        <di:waypoint x="2240" y="470" />
+        <di:waypoint x="2240" y="357" />
+        <di:waypoint x="2302" y="357" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

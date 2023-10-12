@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+             xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+             xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+             xmlns:dmndi="http://www.omg.org/spec/DMN/20180521/DMNDI/"
+             xmlns:dmn="http://www.omg.org/spec/DMN/20180521/MODEL"
+             xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+             xmlns:modeler="http://camunda.org/schema/modeler/1.0"
+             id="definitions"
+             targetNamespace="http://bpmn.io/schema/bpmn"
+             exporter="Camunda Modeler" exporterVersion="5.13.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.19.0">
+
+    <bpmn:process id="cancerDiagnosisProcess" isExecutable="true">
+
+        <!-- Start Event -->
+        <bpmn:startEvent id="startEvent" name="Genetic Testing Ordered">
+            <!-- Start event properties -->
+        </bpmn:startEvent>
+
+        <!-- Service Tasks, User Tasks, Gateways, and other BPMN elements -->
+        
+        <!-- Service Task: Fetch Patient Data -->
+        <bpmn:serviceTask id="fetchPatientDataTask" name="Fetch Patient Data">
+            <bpmn:extensionElements>
+                <camunda:inputOutput>
+                    <camunda:inputParameter name="fhirEndpoint">http://your-fhir-server-url</camunda:inputParameter>
+                    <!-- Add other input parameters as needed -->
+                </camunda:inputOutput>
+            </bpmn:extensionElements>
+        </bpmn:serviceTask>
+
+        <!-- Service Task: Parse Patient Data -->
+        <bpmn:serviceTask id="parsePatientDataTask" name="Parse Patient Data">
+            <!-- Service task properties -->
+        </bpmn:serviceTask>
+
+        <!-- DMN Task: Determine Clinical Implications -->
+        <bpmn:businessRuleTask id="dmnTask" name="Determine Clinical Implications">
+            <bpmn:extensionElements>
+                <camunda:inputOutput>
+                    <camunda:inputParameter name="inputVariable">patientData</camunda:inputParameter>
+                    <!-- Add other input parameters as needed -->
+                </camunda:inputOutput>
+            </bpmn:extensionElements>
+        </bpmn:businessRuleTask>
+
+        <!-- Service Tasks, User Tasks, and other BPMN elements -->
+
+        <!-- End Event -->
+        <bpmn:endEvent id="endEvent" name="Treatment Completed">
+            <!-- End event properties -->
+        </bpmn:endEvent>
+
+    </bpmn:process>
+
+    <!-- DMN Model -->
+    <dmn:definitions id="definitions"
+                     name="DetermineClinicalImplications"
+                     namespace="http://camunda.org/schema/dmn/1.0/"
+                     exporter="Camunda Modeler"
+                     exporterVersion="1.0">
+        <dmn:decision id="determineClinicalImplications" name="Determine Clinical Implications">
+            <!-- DMN decision table and rules go here -->
+        </dmn:decision>
+    </dmn:definitions>
+
+    <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+        <!-- BPMN diagram elements go here -->
+    </bpmndi:BPMNDiagram>
+
+    <dmndi:DMNDI>
+        <!-- DMN diagram elements go here -->
+    </dmndi:DMNDI>
+
+</definitions>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1gwx950" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.15.2" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.19.0">
+  <bpmn:process id="MetAlkTreatment" name="MetAlkTreatment" isExecutable="true" camunda:historyTimeToLive="180">
+    <bpmn:startEvent id="StartEvent_1" name="start">
+      <bpmn:outgoing>Flow_127g9l1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:receiveTask id="Activity_1thsrp0" name="Extract all therapeutic implications of gene" messageRef="Message_2j959uk">
+      <bpmn:incoming>Flow_127g9l1</bpmn:incoming>
+      <bpmn:outgoing>Flow_02aq7z9</bpmn:outgoing>
+      <bpmn:property id="Property_1944nt5" name="__targetRef_placeholder" />
+      <bpmn:dataInputAssociation id="DataInputAssociation_1i9mbbo">
+        <bpmn:sourceRef>DataObjectReference_1dqag6a</bpmn:sourceRef>
+        <bpmn:targetRef>Property_1944nt5</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+    </bpmn:receiveTask>
+    <bpmn:sequenceFlow id="Flow_127g9l1" sourceRef="StartEvent_1" targetRef="Activity_1thsrp0" />
+    <bpmn:dataObjectReference id="DataObjectReference_1dqag6a" name="getTherapeuticImplications" dataObjectRef="DataObject_0ujytna">
+      <bpmn:documentation>FHIR(GETBUNDLE):Observation?patient=$(patient)&amp;code=69548-6&amp;component-value-concept=HGNC%3A7029,HGNC%3A427</bpmn:documentation>
+    </bpmn:dataObjectReference>
+    <bpmn:dataObject id="DataObject_0ujytna" />
+    <bpmn:serviceTask id="Activity_1otqs2b" name="get therapies list" camunda:expression="${S(getTherapeuticImplications)}" camunda:resultVariable="therapeuticimplications">
+      <bpmn:incoming>Flow_02aq7z9</bpmn:incoming>
+      <bpmn:outgoing>Flow_1p845qs</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_02aq7z9" sourceRef="Activity_1thsrp0" targetRef="Activity_1otqs2b" />
+    <bpmn:endEvent id="Event_1i6v4gf" name="end">
+      <bpmn:incoming>Flow_1p845qs</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1p845qs" sourceRef="Activity_1otqs2b" targetRef="Event_1i6v4gf" />
+  </bpmn:process>
+  <bpmn:message id="Message_2j959uk" name="Message_2j959uk" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="MetAlkTreatment">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="179" y="309" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="186" y="352" width="22" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_07v63qw_di" bpmnElement="Activity_1thsrp0">
+        <dc:Bounds x="430" y="287" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataObjectReference_1dqag6a_di" bpmnElement="DataObjectReference_1dqag6a">
+        <dc:Bounds x="462" y="115" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="437" y="78" width="86" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1s8pyzs_di" bpmnElement="Activity_1otqs2b">
+        <dc:Bounds x="610" y="287" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1i6v4gf_di" bpmnElement="Event_1i6v4gf">
+        <dc:Bounds x="792" y="309" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="801" y="352" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="DataInputAssociation_1i9mbbo_di" bpmnElement="DataInputAssociation_1i9mbbo">
+        <di:waypoint x="480" y="165" />
+        <di:waypoint x="480" y="287" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_127g9l1_di" bpmnElement="Flow_127g9l1">
+        <di:waypoint x="215" y="327" />
+        <di:waypoint x="430" y="327" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_02aq7z9_di" bpmnElement="Flow_02aq7z9">
+        <di:waypoint x="530" y="327" />
+        <di:waypoint x="610" y="327" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1p845qs_di" bpmnElement="Flow_1p845qs">
+        <di:waypoint x="710" y="327" />
+        <di:waypoint x="792" y="327" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1wgfcux" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.15.2" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.19.0">
+  <bpmn:process id="metalkDetection" name="metalkDetection" isExecutable="true" camunda:historyTimeToLive="180">
+    <bpmn:startEvent id="StartEvent_1" name="Start">
+      <bpmn:outgoing>Flow_0u9cu0x</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:receiveTask id="Activity_1gw6cqb" name="Extract Genomic Alterations from FHIR Data" messageRef="Message_11v5u37">
+      <bpmn:incoming>Flow_0u9cu0x</bpmn:incoming>
+      <bpmn:outgoing>Flow_0phcxxk</bpmn:outgoing>
+      <bpmn:property id="Property_0mtmxyu" name="__targetRef_placeholder" />
+      <bpmn:dataInputAssociation id="DataInputAssociation_11bdy2e">
+        <bpmn:sourceRef>DataObjectReference_1twgqvo</bpmn:sourceRef>
+        <bpmn:targetRef>Property_0mtmxyu</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+    </bpmn:receiveTask>
+    <bpmn:dataObjectReference id="DataObjectReference_1twgqvo" name="geneticvariantsObservations" dataObjectRef="DataObject_0yx5t9r">
+      <bpmn:documentation>FHIR(GET):Observation?patient=$(patient)&amp;code=69548-6&amp;component-value-concept=HGNC%3A7029,HGNC%3A427</bpmn:documentation>
+    </bpmn:dataObjectReference>
+    <bpmn:dataObject id="DataObject_0yx5t9r" />
+    <bpmn:sequenceFlow id="Flow_0u9cu0x" sourceRef="StartEvent_1" targetRef="Activity_1gw6cqb" />
+    <bpmn:businessRuleTask id="Activity_1rseub9" name="Check for MET ALK Gene" camunda:resultVariable="isVariantPresent" camunda:decisionRef="geneCheck" camunda:mapDecisionResult="singleEntry">
+      <bpmn:incoming>Flow_0phcxxk</bpmn:incoming>
+      <bpmn:outgoing>Flow_06avyt8</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+    <bpmn:sequenceFlow id="Flow_0phcxxk" sourceRef="Activity_1gw6cqb" targetRef="Activity_1rseub9" />
+    <bpmn:endEvent id="Event_107kcdd" name="End Task">
+      <bpmn:incoming>Flow_06avyt8</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_06avyt8" sourceRef="Activity_1rseub9" targetRef="Event_107kcdd" />
+  </bpmn:process>
+  <bpmn:message id="Message_11v5u37" name="Message_11v5u37" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="metalkDetection">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="152" y="269" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="158" y="312" width="24" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1y3a15g_di" bpmnElement="Activity_1gw6cqb">
+        <dc:Bounds x="290" y="247" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataObjectReference_1twgqvo_di" bpmnElement="DataObjectReference_1twgqvo">
+        <dc:Bounds x="322" y="95" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="296" y="65" width="89" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0x1frkf_di" bpmnElement="Activity_1rseub9">
+        <dc:Bounds x="490" y="247" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_107kcdd_di" bpmnElement="Event_107kcdd">
+        <dc:Bounds x="702" y="269" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="697" y="312" width="46" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="DataInputAssociation_11bdy2e_di" bpmnElement="DataInputAssociation_11bdy2e">
+        <di:waypoint x="340" y="145" />
+        <di:waypoint x="340" y="247" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0phcxxk_di" bpmnElement="Flow_0phcxxk">
+        <di:waypoint x="390" y="287" />
+        <di:waypoint x="490" y="287" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0u9cu0x_di" bpmnElement="Flow_0u9cu0x">
+        <di:waypoint x="188" y="287" />
+        <di:waypoint x="290" y="287" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="266" y="159" width="24" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_06avyt8_di" bpmnElement="Flow_06avyt8">
+        <di:waypoint x="590" y="287" />
+        <di:waypoint x="702" y="287" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

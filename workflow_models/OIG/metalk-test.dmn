@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:biodi="http://bpmn.io/schema/dmn/biodi/2.0" id="Definitions_0b4ynzf" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="5.13.0">
+  <decision id="geneMetAlkValues" name="Decision 1">
+    <decisionTable id="DecisionTable_15f8s0x">
+      <input id="Input_1" label="geneticvariantsObservations" biodi:width="192">
+        <inputExpression id="InputExpression_1" typeRef="string">
+          <text>geneticvariantsObservations.resourceType</text>
+        </inputExpression>
+      </input>
+      <output id="Output_1" name="isPresent" typeRef="boolean" />
+      <rule id="DecisionRule_0lslxz3">
+        <inputEntry id="UnaryTests_1x3ehmi">
+          <text>Observation</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_139xuye">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram>
+      <dmndi:DMNShape dmnElementRef="bloodNormalValues">
+        <dc:Bounds height="80" width="180" x="150" y="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</definitions>
