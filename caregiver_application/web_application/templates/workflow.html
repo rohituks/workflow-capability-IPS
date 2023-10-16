@@ -108,15 +108,38 @@
                     </select>
                 </div>
             </div>
+            <div class="">
+                <label for="observationValue">Value:</label>
+            </div>
+            <div class="">
+                <input type="text" class="form-control" id="observationValue" placeholder="Observation Value"
+                    name="observationValue" required>
+            </div>
+            <div id="myDiv" class="form-item" style="display: none;">
+                <div class="">
+                    <label for="medication">Select Medications:</label>
+                </div>
+                <div class="">
+                    <select class="form-control" id="medicationCode" placeholder="Medication Type" 
+                        name="medicationCode" required>
+                        <option value="">- Select a medication -</option>
+                        <option value="11331-6" data-type="quantity">ABCD</option>
+                        <option value="8310-5" data-type="quantity">CDFE</option>
+                        <option value="9279-1" data-type="quantity">WWWW</option>
+                        <option value="8867-4" data-type="quantity">FFFFF</option>
+                        <option value="85354-9" data-type="quantity">QQQQQ</option>
+                    </select>
+                </div>
             <div class="form-item">
                 <div class="">
-                    <label for="observationValue">Value:</label>
+                    <label for="medicationValue">Value:</label>
                 </div>
                 <div class="">
-                    <input type="text" class="form-control" id="observationValue" placeholder="Observation Value"
-                        name="observationValue" required>
+                    <input type="text" class="form-control" id="medicationValue" placeholder="Medication Value"
+                        name="medicationValue" required>
                 </div>
             </div>
+        </div>
             <div class="form-item text-center">
                 <button type="submit" id="btnSubmitObservation" class="btn btn-primary btn-md">Submit</button>
                 <input type="hidden" value="{{ patId }}" name="patientId" />
@@ -159,8 +182,50 @@
             $('#hidValueType').val(dataType);
         });       
     });
+        // Flag to check if "Prescribe Medications" is found
+        var hasPrescribeMedications = false;
+        var taskList = {{ task_list|tojson|safe }};
+        /*
+        // Parse the JSON string into a JavaScript object
+        console.log(taskList);
 
-   
+        for (var i = 0; i < taskList.length; i++) {
+            for (var j = 0; j < taskList[i].identifier.length; j++) {
+        if (taskList[i].identifier[j].system === "taskName") {
+            var taskTitle = taskList[i].identifier[j].value;
+            // Do something with taskTitle (e.g., display it on the webpage)
+            console.log("Task Title: " + taskTitle);
+                }
+                }
+        }
+       // alert(JSON.stringify({{ task_list|tojson|safe }} ));
+        console.log(taskList); 
+        */
+        // Loop through the task_list to find "Prescribe Medications"
+        for (var i = 0; i < taskList.length; i++) {
+            var identifiers = taskList[i].identifier;
+            for (var j = 0; j < identifiers.length; j++) {
+                if (
+                    identifiers[j].system === 'taskName' &&
+                    identifiers[j].value === 'Prescribe Medications'
+
+                ) {
+                    hasPrescribeMedications = true;
+                    break;
+                }
+                else {
+                }
+            }
+            if (hasPrescribeMedications) {
+                break;
+            }
+        }
+
+        // Show/hide div elements based on conditions
+        if (hasPrescribeMedications) {
+            document.getElementById('myDiv').style.display = 'block';
+        } 
+  
 </script>
 
 {% endblock %}
