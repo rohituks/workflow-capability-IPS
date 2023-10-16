@@ -27,6 +27,7 @@ while true; do
   sleep 1
 done
 
+
 echo "-- STARTING CAMUNDA --"
 cd ..
 bash -eo pipefail -c "java -jar engine/camunda/target/camunda_engine-0.0.2-SNAPSHOT.jar | awk '{print \"[CAM] \"\$0}'" &
@@ -34,7 +35,7 @@ cd new_scripts
 
 echo "-- STARTING CAREGIVER APP --"
 cd ..
-bash -eo pipefail -c "python caregiver_application/main.py | awk '{print \"[CGA] \"\$0}'" &
+bash -eo pipefail -c "python3 caregiver_application/main.py | awk '{print \"[CGA] \"\$0}'" &
 cd new_scripts
 
 # echo "-- STARTING MANAGEMENT DASHBOARD --"

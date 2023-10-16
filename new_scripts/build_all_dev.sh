@@ -21,7 +21,7 @@ echo "---------- Camunda build-script finished ----------"
 echo ""
 echo "---------- Caregiver app build-script starting ----------"
 cd caregiver_application
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 cd ..
 echo "---------- Caregiver app build-script finished ----------"
 
