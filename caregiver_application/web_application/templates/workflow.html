@@ -115,6 +115,36 @@
                 <input type="text" class="form-control" id="observationValue" placeholder="Observation Value"
                     name="observationValue" required>
             </div>
+            <hr style="margin-top: 20px; margin-bottom: 20px;">
+
+            <div>
+            <div id="myDiv" class="form-item" style="display: none;">
+                <label for="medication" style="font-weight: bold;">Select Medications:</label>
+            </div>
+            <div class="">
+                <div class="checkbox-group"  >
+                    <label class="checkbox-container" style="display: block; margin-bottom: 10px;">
+                        <input type="checkbox" name="medicationCode" value="1542109" data-type="quantity">
+                        <span class="checkmark"></span>
+                        CRIZOTINIB [I, A; MCBS 4]
+                        <input type="text" class="medication-quantity" name="medicationValue" placeholder="Quantity">
+                    </label>
+                    <label class="checkbox-container" style="display: block; margin-bottom: 10px">
+                        <input type="checkbox" name="medicationCode" value="1907559" data-type="quantity">
+                        <span class="checkmark"></span>
+                        ALECTINIB [I, A; MCBS 4]
+                        <input type="text" class="medication-quantity" name="medicationValue" placeholder="Quantity">
+                    </label>
+                    <label class="checkbox-container" style="display: block; margin-bottom: 10px">
+                        <input type="checkbox" name="medicationCode" value="1932755" data-type="quantity">
+                        <span class="checkmark"></span>
+                        CERITINIB [I, B; MCBS 4]
+                        <input type="text" class="medication-quantity" name="medicationValue" placeholder="Quantity">
+                    </label>
+                    <!-- Add similar labels and input fields for other options -->
+                </div>
+            </div>
+      <!--     DROPDOWN VALUES
             <div id="myDiv" class="form-item" style="display: none;">
                 <div class="">
                     <label for="medication">Select Medications:</label>
@@ -139,13 +169,15 @@
                         name="medicationValue" required>
                 </div>
             </div>
-        </div>
+        </div> -->
             <div class="form-item text-center">
                 <button type="submit" id="btnSubmitObservation" class="btn btn-primary btn-md">Submit</button>
                 <input type="hidden" value="{{ patId }}" name="patientId" />
                 <input type="hidden" id="hidValueType" value="" name="obervationValueType" />
                 
             </div>
+        </div>
+
         </form>
     </div>
 </div>
