@@ -120,6 +120,32 @@ def observation_add(id, taskid):
         observeDone = False
     return redirect('/workflow/'+id+'?observeDone=' + str(observeDone) + '&taskid=' + str(taskid))
 
+@views.route("/workflow/<id>/<taskid>/MedicationRequest", methods=['POST'])
+def medication_add(id, taskid):
+    print( "hello" + id + taskid)
+    
+    medicationCodes = request.form.getlist('medicationCode')
+    medicationValues = request.form.getlist('medicationValue')
+    medicationValueType = request.form['medicationValueType']
+    medicationLabels = request.form.getlist('medicationLabel')
+
+    valueQuantity_code = '{s}'      # It can also be an empty {} based on the type of observation
+    valueQuantity_unit = '{s}'      # It can also be an empty {} based on the type of observation
+
+    for i, code in enumerate(medicationCodes):
+        if medicationValueType == 'quantity':
+            res = cdr.create_medication_request_quantity(code, medicationLabels[i], request.form['patientId'], medicationValues[i], valueQuantity_unit, valueQuantity_code)
+        else:
+            res = cdr.create_medication_request_string(code, medicationLabels[i], request.form['patientId'], medicationValues[i])
+        print(res)
+        if res and res["status"] == 'active':
+            medicationDone = True
+        else:
+            medicationDone = False
+        print("medicationDone, {} ".format(medicationDone))
+    return redirect('/workflow/'+id+'?medicationDone=' + str(medicationDone) + '&taskid=' + str(taskid))
+
+
 
 @views.route("/labview", methods=['GET', 'POST'])
 def labview():

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0if1hqf" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.15.2" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.19.0">
-  <bpmn:process id="nonsmalllungcancerPathway" name="nonsmalllungcancerPathway" isExecutable="true" camunda:historyTimeToLive="10">
+  <bpmn:process id="nonsmalllungcancerPathway" name="nonsmalllungcancerPathway" isExecutable="true" camunda:historyTimeToLive="100">
     <bpmn:startEvent id="StartEvent_1" name="Start - Physician Orders Genetic Test">
       <bpmn:outgoing>Flow_15b0fzc</bpmn:outgoing>
     </bpmn:startEvent>
@@ -47,18 +47,13 @@
     <bpmn:sequenceFlow id="Flow_1mb1p7c" sourceRef="Gateway_0821nd1" targetRef="Event_1dczxdn">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${isLabResultsEmpty== true}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:userTask id="Activity_02n7694" name="Physician check Genetic lab results">
-      <bpmn:incoming>Flow_1yd70sn</bpmn:incoming>
-      <bpmn:outgoing>Flow_06h553e</bpmn:outgoing>
-    </bpmn:userTask>
     <bpmn:endEvent id="Event_0i14e0d" name="end">
-      <bpmn:incoming>Flow_0p8rmrc</bpmn:incoming>
-      <bpmn:incoming>Flow_1p21t0k</bpmn:incoming>
+      <bpmn:incoming>Flow_0t861wi</bpmn:incoming>
+      <bpmn:incoming>Flow_0yxiwzp</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_1yd70sn" sourceRef="Gateway_0821nd1" targetRef="Activity_02n7694">
+    <bpmn:sequenceFlow id="Flow_1yd70sn" sourceRef="Gateway_0821nd1" targetRef="Activity_1wc0ucg">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${isLabResultsEmpty == false}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_06h553e" sourceRef="Activity_02n7694" targetRef="Activity_1wc0ucg" />
     <bpmn:sequenceFlow id="Flow_1j58a10" sourceRef="Activity_12mo3dc" targetRef="Gateway_0821nd1" />
     <bpmn:serviceTask id="Activity_12mo3dc" name="Are these Genetics lab results?" camunda:expression="${S(getLabresults).isNull()}" camunda:resultVariable="isLabResultsEmpty">
       <bpmn:extensionElements>
@@ -74,12 +69,12 @@
         <camunda:in variables="all" />
         <camunda:out variables="all" />
       </bpmn:extensionElements>
-      <bpmn:incoming>Flow_06h553e</bpmn:incoming>
+      <bpmn:incoming>Flow_1yd70sn</bpmn:incoming>
       <bpmn:outgoing>Flow_1cqxisv</bpmn:outgoing>
     </bpmn:callActivity>
     <bpmn:sequenceFlow id="Flow_1cqxisv" sourceRef="Activity_1wc0ucg" targetRef="Activity_0q8f0rs" />
     <bpmn:sequenceFlow id="Flow_06hbpdu" sourceRef="Activity_0q8f0rs" targetRef="Gateway_0z560ap" />
-    <bpmn:userTask id="Activity_0q8f0rs" name="Physician checks Variants data">
+    <bpmn:userTask id="Activity_0q8f0rs" name="Physician checks variants data">
       <bpmn:extensionElements>
         <camunda:executionListener expression="${execution.setVariable(&#39;taskTitle&#39;, &#39;registerTask&#39;)}" event="end" />
       </bpmn:extensionElements>
@@ -94,14 +89,9 @@
     <bpmn:sequenceFlow id="Flow_1x30zw3" name="MET-ALK" sourceRef="Gateway_0z560ap" targetRef="Activity_1xzma13">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${execution.getVariable('isVariantPresent') == true}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_1kgbpfg" sourceRef="Gateway_0z560ap" targetRef="Activity_07qbxe8">
+    <bpmn:sequenceFlow id="Flow_1kgbpfg" name="MET-ROS1" sourceRef="Gateway_0z560ap" targetRef="Activity_07qbxe8">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${execution.getVariable('isVariantPresent') == false}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:userTask id="Activity_07qbxe8" name="False case">
-      <bpmn:incoming>Flow_1kgbpfg</bpmn:incoming>
-      <bpmn:outgoing>Flow_0p8rmrc</bpmn:outgoing>
-    </bpmn:userTask>
-    <bpmn:sequenceFlow id="Flow_0p8rmrc" sourceRef="Activity_07qbxe8" targetRef="Event_0i14e0d" />
     <bpmn:callActivity id="Activity_1xzma13" name="MET ALK Treatment Plan" calledElement="MetAlkTreatment">
       <bpmn:extensionElements>
         <camunda:in variables="all" />
@@ -110,14 +100,65 @@
       <bpmn:incoming>Flow_1x30zw3</bpmn:incoming>
       <bpmn:outgoing>Flow_1yzayo3</bpmn:outgoing>
     </bpmn:callActivity>
-    <bpmn:sequenceFlow id="Flow_1yzayo3" sourceRef="Activity_1xzma13" targetRef="Activity_1ottkxa" />
-    <bpmn:sequenceFlow id="Flow_1p21t0k" sourceRef="Activity_1ottkxa" targetRef="Event_0i14e0d" />
-    <bpmn:userTask id="Activity_1ottkxa" name="${taskTitle}">
-      <bpmn:documentation>${execution.getVariable('taskTitle')}</bpmn:documentation>
+    <bpmn:sequenceFlow id="Flow_1yzayo3" sourceRef="Activity_1xzma13" targetRef="Activity_09u51l0" />
+    <bpmn:userTask id="Activity_1ottkxa" name="Prescribe Medications">
+      <bpmn:documentation>Predicted Therapeutic Implication
+1.Drug: Alectinib
+Status: Presumed responsive
+2.Drug: brigatinib
+Status: Presumed responsive
+3.Drug: ceritinib
+Status: Presumed responsive
+4.Drug: crizotinib
+Status: Presumed responsive
+5.Drug: lorlatinib
+Status: Presumed responsive</bpmn:documentation>
       <bpmn:extensionElements />
-      <bpmn:incoming>Flow_1yzayo3</bpmn:incoming>
-      <bpmn:outgoing>Flow_1p21t0k</bpmn:outgoing>
+      <bpmn:incoming>Flow_1rcp6o9</bpmn:incoming>
+      <bpmn:outgoing>Flow_1w5iq3f</bpmn:outgoing>
     </bpmn:userTask>
+    <bpmn:userTask id="Activity_1mhc9lr" name="Administer">
+      <bpmn:incoming>Flow_1w5iq3f</bpmn:incoming>
+      <bpmn:outgoing>Flow_0t861wi</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_0t861wi" sourceRef="Activity_1mhc9lr" targetRef="Event_0i14e0d" />
+    <bpmn:sequenceFlow id="Flow_1w5iq3f" sourceRef="Activity_1ottkxa" targetRef="Activity_1mhc9lr" />
+    <bpmn:sequenceFlow id="Flow_1rcp6o9" sourceRef="Activity_09u51l0" targetRef="Activity_1ottkxa" />
+    <bpmn:scriptTask id="Activity_09u51l0" name="extract medicines" scriptFormat="groovy">
+      <bpmn:incoming>Flow_1yzayo3</bpmn:incoming>
+      <bpmn:outgoing>Flow_1rcp6o9</bpmn:outgoing>
+      <bpmn:script>import groovy.json.JsonSlurper
+
+// Parse the FHIR data
+String fhirData = execution.getVariable("getTherapeuticImplications")
+def jsonSlurper = new JsonSlurper()
+def fhirJson = jsonSlurper.parseText(fhirData)
+
+def drugs = []
+def statuses = []
+
+fhirJson.entry.each { entry -&gt;
+    def resource = entry.resource
+    if (resource.resourceType == "Observation") {
+        resource.component.each { component -&gt;
+            def value = component.valueCodeableConcept
+            if (value) {
+                drugs &lt;&lt; value.coding[0].display
+                statuses &lt;&lt; resource.status
+            }
+        }
+    }
+}
+
+// Set the results as process variables
+execution.setVariable("drugs", drugs)
+execution.setVariable("statuses", statuses)</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:userTask id="Activity_07qbxe8" name="False case">
+      <bpmn:incoming>Flow_1kgbpfg</bpmn:incoming>
+      <bpmn:outgoing>Flow_0yxiwzp</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_0yxiwzp" sourceRef="Activity_07qbxe8" targetRef="Event_0i14e0d" />
     <bpmn:group id="Group_1v6pdrn" categoryValueRef="CategoryValue_1nz6a9j" />
   </bpmn:process>
   <bpmn:message id="Message_3eie1ln" name="Get Genomic Vairants Observations" />
@@ -136,7 +177,7 @@
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
         <dc:Bounds x="222" y="339" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="198" y="382" width="86" height="40" />
+          <dc:Bounds x="197" y="382" width="86" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1xu4au1_di" bpmnElement="Activity_0txvqxk">
@@ -168,22 +209,14 @@
           <dc:Bounds x="870" y="145" width="67" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1mk4g54_di" bpmnElement="Activity_02n7694">
-        <dc:Bounds x="1380" y="317" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0i14e0d_di" bpmnElement="Event_0i14e0d">
-        <dc:Bounds x="2852" y="339" width="36" height="36" />
+        <dc:Bounds x="3062" y="339" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2861" y="382" width="19" height="14" />
+          <dc:Bounds x="3071" y="382" width="19" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1o9pamc_di" bpmnElement="Activity_12mo3dc">
         <dc:Bounds x="1050" y="317" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1wc0ucg_di" bpmnElement="Activity_1wc0ucg">
-        <dc:Bounds x="1550" y="317" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1ifr7rq_di" bpmnElement="Activity_0q8f0rs">
@@ -193,15 +226,25 @@
       <bpmndi:BPMNShape id="Gateway_0z560ap_di" bpmnElement="Gateway_0z560ap" isMarkerVisible="true">
         <dc:Bounds x="1875" y="332" width="50" height="50" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1212s03_di" bpmnElement="Activity_07qbxe8">
-        <dc:Bounds x="2190" y="540" width="100" height="80" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1xzma13_di" bpmnElement="Activity_1xzma13">
-        <dc:Bounds x="2080" y="317" width="100" height="80" />
+        <dc:Bounds x="2050" y="317" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1b19s4g_di" bpmnElement="Activity_1ottkxa">
-        <dc:Bounds x="2370" y="317" width="100" height="80" />
+        <dc:Bounds x="2420" y="317" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_13ybaba_di" bpmnElement="Activity_1mhc9lr">
+        <dc:Bounds x="2570" y="317" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1e6j49y_di" bpmnElement="Activity_09u51l0">
+        <dc:Bounds x="2250" y="317" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1212s03_di" bpmnElement="Activity_07qbxe8">
+        <dc:Bounds x="2000" y="540" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1wc0ucg_di" bpmnElement="Activity_1wc0ucg">
+        <dc:Bounds x="1450" y="317" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Group_1v6pdrn_di" bpmnElement="Group_1v6pdrn">
@@ -242,18 +285,14 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1yd70sn_di" bpmnElement="Flow_1yd70sn">
         <di:waypoint x="1305" y="357" />
-        <di:waypoint x="1380" y="357" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_06h553e_di" bpmnElement="Flow_06h553e">
-        <di:waypoint x="1480" y="357" />
-        <di:waypoint x="1550" y="357" />
+        <di:waypoint x="1450" y="357" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1j58a10_di" bpmnElement="Flow_1j58a10">
         <di:waypoint x="1150" y="357" />
         <di:waypoint x="1255" y="357" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1cqxisv_di" bpmnElement="Flow_1cqxisv">
-        <di:waypoint x="1650" y="357" />
+        <di:waypoint x="1550" y="357" />
         <di:waypoint x="1710" y="357" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_06hbpdu_di" bpmnElement="Flow_06hbpdu">
@@ -262,29 +301,40 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1x30zw3_di" bpmnElement="Flow_1x30zw3">
         <di:waypoint x="1925" y="357" />
-        <di:waypoint x="2080" y="357" />
+        <di:waypoint x="2050" y="357" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1988" y="339" width="48" height="14" />
+          <dc:Bounds x="1971" y="339" width="48" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1kgbpfg_di" bpmnElement="Flow_1kgbpfg">
         <di:waypoint x="1900" y="382" />
         <di:waypoint x="1900" y="580" />
-        <di:waypoint x="2190" y="580" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0p8rmrc_di" bpmnElement="Flow_0p8rmrc">
-        <di:waypoint x="2290" y="580" />
-        <di:waypoint x="2740" y="580" />
-        <di:waypoint x="2740" y="357" />
-        <di:waypoint x="2852" y="357" />
+        <di:waypoint x="2000" y="580" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1911" y="543" width="57" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1yzayo3_di" bpmnElement="Flow_1yzayo3">
-        <di:waypoint x="2180" y="357" />
-        <di:waypoint x="2370" y="357" />
+        <di:waypoint x="2150" y="357" />
+        <di:waypoint x="2250" y="357" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1p21t0k_di" bpmnElement="Flow_1p21t0k">
-        <di:waypoint x="2470" y="357" />
-        <di:waypoint x="2852" y="357" />
+      <bpmndi:BPMNEdge id="Flow_0t861wi_di" bpmnElement="Flow_0t861wi">
+        <di:waypoint x="2670" y="357" />
+        <di:waypoint x="3062" y="357" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1w5iq3f_di" bpmnElement="Flow_1w5iq3f">
+        <di:waypoint x="2520" y="357" />
+        <di:waypoint x="2570" y="357" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1rcp6o9_di" bpmnElement="Flow_1rcp6o9">
+        <di:waypoint x="2350" y="357" />
+        <di:waypoint x="2420" y="357" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0yxiwzp_di" bpmnElement="Flow_0yxiwzp">
+        <di:waypoint x="2100" y="580" />
+        <di:waypoint x="2700" y="580" />
+        <di:waypoint x="2700" y="357" />
+        <di:waypoint x="3062" y="357" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

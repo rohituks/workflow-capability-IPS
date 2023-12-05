@@ -172,6 +172,63 @@ class Cdr:
             return None
         return json.loads(response.text)
 
+    def create_medication_request_string(self, medication_code, medication_display, patient, medicationValue):
+        jsoncp = {
+            'resourceType': 'MedicationRequest',
+            'status': 'active',
+            'intent': 'order',
+            'medicationCodeableConcept': {
+                'coding': [{
+                    'system': 'http://www.nlm.nih.gov/research/umls/rxnorm',
+                    'code': medication_code,
+                    'display': medication_display
+                }],
+                'text': medication_display
+            },
+            'subject': {
+                'reference': 'Patient/' + patient
+            }
+        }
+        print("String:" + json.dumps(jsoncp, indent=4))
+        response = requests.post(self.base_url + "/MedicationRequest", data=str(jsoncp), headers=self.header)
+        print(response)
+        if not response:
+            print("MedicationRequest create failed ", response.status_code, "  - ", response.text)
+            return None
+        return json.loads(response.text)
+    
+    def create_medication_request_quantity(self, medication_code, medication_display, patient, quantity_value, quantity_unit, quantity_code):
+        jsoncp = {
+            'resourceType': 'MedicationRequest',
+            'status': 'active',
+            'intent': 'order',
+            'medicationCodeableConcept': {
+                'coding': [{
+                    'system': 'http://www.nlm.nih.gov/research/umls/rxnorm',
+                    'code': medication_code,
+                    'display': medication_display
+                }],
+                'text': medication_display
+            },
+            'subject': {
+                'reference': 'Patient/' + patient
+            },
+            'dispenseRequest': {
+                'quantity': {
+                    'value': quantity_value,
+                    'unit': quantity_unit,
+                    'system': 'http://unitsofmeasure.org',
+                    'code': quantity_code
+                }
+            }
+        }
+        print("Quantity: " + json.dumps(jsoncp, indent=4))
+        response = requests.post(self.base_url + "/MedicationRequest", data=str(jsoncp), headers=self.header)
+        if not response:
+            print("MedicationRequest create failed ", response.status_code, "  - ", response.text)
+            return None
+        return json.loads(response.text)
+    
     def create_care_plan(self, cp):
         response = requests.post(self.base_url+"/CarePlan", data=str(cp), headers=self.header)
         if not response:

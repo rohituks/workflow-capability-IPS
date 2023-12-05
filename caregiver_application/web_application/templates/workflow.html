@@ -2,16 +2,19 @@
 {% block title %} Current Workflow {% endblock %}
 
 {% block content %}
+
 <div> 
     <span>Tasks running for workflow:</span>
     <span><b> {{ workflowName }} </b></span>   
 </div>
 
 
-<div class="alert alert-success" role="alert">
-    Successfully added observation.
+<div class="alert alert-success" role="alert" style="display:none;">
+    Successfully added.
   </div>
-
+  <div class="alert alert-success alertMedication" role="alert" style="display:none;">
+    Successfully added.
+</div>
 
 <div> 
     <span>Patient:</span>
@@ -40,7 +43,6 @@
 <br />
 <div class="workflow-wrapper">
     {% for i in range(0,len) %}
-
     <div class="task-wrapper">
         <div class="task-line"></div>
         <div {% if task_list[i]['status']=='received' %} class="task-icon task-running" {% else %}
@@ -54,15 +56,24 @@
                 {% endif %}
             </span>
 
-            <div class="task-info">
-                <div>
+            <div class="task-info" >
+                <div class="expandable-div">
                     <label><b>Instructions:</b></label> <span>{{ task_list[i]["description"] }}</span>
-                </div>               
-                <div class="observation-opener" >
-                    <span data-taskId={{ task_list[i]["id"] }}>
+                </div>   
+            
+                <div class="observation-opener">
+                    <span data-taskId={{ task_list[i]["id"] }} data-formType="observation">
                         <i class="bi bi-plus-circle add-observe"></i>
                         <label>Observation</label>
-                    </span>                    
+                    </span>
+                    {% for identifier in task_list[i]["identifier"] %}
+                    {% if identifier["system"] == "taskName" and identifier["value"] == "Prescribe Medications" %}
+                    <span data-taskId={{ task_list[i]["id"] }} data-formType="medication" class="medication-span">
+                        <i class="bi bi-plus-circle add-observe"></i>
+                        <label>Medication</label>
+                    </span>
+                    {% endif %}
+                {% endfor %}
                 </div>
                 <!-- <div>
                     <label>updated:</label> <span>
@@ -88,7 +99,6 @@
         <i class="bi bi-x-lg"></i>
     </div>
     <div class="dialog">
-        
         <form id="frmObservation" action="'/workflow/' + {{ id }} + '/' + taskId + '/' + '/observe'" method="POST">
             <div class="form-item">
                 <div class="">
@@ -115,148 +125,110 @@
                 <input type="text" class="form-control" id="observationValue" placeholder="Observation Value"
                     name="observationValue" required>
             </div>
-            <hr style="margin-top: 20px; margin-bottom: 20px;">
-
-            <div>
-            <div id="myDiv" class="form-item" style="display: none;">
-                <label for="medication" style="font-weight: bold;">Select Medications:</label>
-            </div>
-            <div class="">
-                <div class="checkbox-group"  >
-                    <label class="checkbox-container" style="display: block; margin-bottom: 10px;">
-                        <input type="checkbox" name="medicationCode" value="1542109" data-type="quantity">
-                        <span class="checkmark"></span>
-                        CRIZOTINIB [I, A; MCBS 4]
-                        <input type="text" class="medication-quantity" name="medicationValue" placeholder="Quantity">
-                    </label>
-                    <label class="checkbox-container" style="display: block; margin-bottom: 10px">
-                        <input type="checkbox" name="medicationCode" value="1907559" data-type="quantity">
-                        <span class="checkmark"></span>
-                        ALECTINIB [I, A; MCBS 4]
-                        <input type="text" class="medication-quantity" name="medicationValue" placeholder="Quantity">
-                    </label>
-                    <label class="checkbox-container" style="display: block; margin-bottom: 10px">
-                        <input type="checkbox" name="medicationCode" value="1932755" data-type="quantity">
-                        <span class="checkmark"></span>
-                        CERITINIB [I, B; MCBS 4]
-                        <input type="text" class="medication-quantity" name="medicationValue" placeholder="Quantity">
-                    </label>
-                    <!-- Add similar labels and input fields for other options -->
-                </div>
-            </div>
-      <!--     DROPDOWN VALUES
-            <div id="myDiv" class="form-item" style="display: none;">
-                <div class="">
-                    <label for="medication">Select Medications:</label>
-                </div>
-                <div class="">
-                    <select class="form-control" id="medicationCode" placeholder="Medication Type" 
-                        name="medicationCode" required>
-                        <option value="">- Select a medication -</option>
-                        <option value="11331-6" data-type="quantity">ABCD</option>
-                        <option value="8310-5" data-type="quantity">CDFE</option>
-                        <option value="9279-1" data-type="quantity">WWWW</option>
-                        <option value="8867-4" data-type="quantity">FFFFF</option>
-                        <option value="85354-9" data-type="quantity">QQQQQ</option>
-                    </select>
-                </div>
-            <div class="form-item">
-                <div class="">
-                    <label for="medicationValue">Value:</label>
-                </div>
-                <div class="">
-                    <input type="text" class="form-control" id="medicationValue" placeholder="Medication Value"
-                        name="medicationValue" required>
-                </div>
-            </div>
-        </div> -->
             <div class="form-item text-center">
                 <button type="submit" id="btnSubmitObservation" class="btn btn-primary btn-md">Submit</button>
                 <input type="hidden" value="{{ patId }}" name="patientId" />
                 <input type="hidden" id="hidValueType" value="" name="obervationValueType" />
                 
             </div>
-        </div>
-
+        </form>
+        <form id="frmMedication" action="'/workflow/' + {{ id }} + '/' + taskId + '/' + '/MedicationRequest'" method="POST"  style="display: none;">
+            <div class="checkbox-group">
+                <label class="checkbox-container" style="display: block; margin-bottom: 10px;">
+                    <input type="checkbox" name="medicationCode" value="1542109" data-type="quantity" id="medication1">
+                    <input type="hidden" name="medicationLabel" value="CRIZOTINIB [I, A; MCBS 4]">
+                    <span class="checkmark"></span>
+                    CRIZOTINIB [I, A; MCBS 4]
+                    <input type="text" class="medication-quantity" name="medicationValue" placeholder="Quantity" id="medicationQuantity1">
+                </label>
+                <label class="checkbox-container" style="display: block; margin-bottom: 10px;">
+                    <input type="checkbox" name="medicationCode" value="1907559" data-type="quantity" id="medication2">
+                    <input type="hidden" name="medicationLabel" value="ALECTINIB [I, A; MCBS 4]">
+                    <span class="checkmark"></span>
+                    ALECTINIB [I, A; MCBS 4]
+                    <input type="text" class="medication-quantity" name="medicationValue" placeholder="Quantity" id="medicationQuantity2">
+                </label>
+                <label class="checkbox-container" style="display: block; margin-bottom: 10px;">
+                    <input type="checkbox" name="medicationCode" value="1932755" data-type="quantity" id="medication3">
+                    <input type="hidden" name="medicationLabel" value="CERITINIB [I, B; MCBS 4]">
+                    <span class="checkmark"></span>
+                    CERITINIB [I, B; MCBS 4]
+                    <input type="text" class="medication-quantity" name="medicationValue" placeholder="Quantity" id="medicationQuantity3">
+                </label>
+                <label class="checkbox-container" style="display: block; margin-bottom: 10px;">
+                    <input type="checkbox" name="medicationCode" value="222222" data-type="quantity" id="medication4">
+                    <input type="hidden" name="medicationLabel" value="Other, not-recommended">
+                    <span class="checkmark"></span>
+                    Other, not-recommended
+                    <input type="text" class="medication-quantity" name="medicationValue" placeholder="Medication with Quantity" id="medicationQuantity4">
+                </label>
+            </div>
+            <div class="form-item text-center">
+                <button type="submit" id="btnSubmitMedicationRequest" class="btn btn-primary btn-md">Submit</button>
+                <input type="hidden" value="{{ patId }}" name="patientId" />
+                <input type="hidden" id="hidValueType" value="" name="medicationValueType" />
+                
+            </div>
         </form>
     </div>
 </div>
 <script>
     $(function () {        
         var currentTaskId = 0;
-        $(".task-info .observation-opener span").click(function () {
+        $(".observation-opener span").click(function() {
             currentTaskId = $(this).attr("data-taskId");
-            var action = '/workflow/' + {{ id }} + '/' + currentTaskId + '/observe';
-            $("#frmObservation").attr("action",action);
+            var formType = $(this).attr("data-formType");
+            
+            if (formType === "observation") {
+                var action = '/workflow/' + {{ id }} + '/' + currentTaskId + '/observe';
+                $("#frmObservation").attr("action", action);
+                $("#frmObservation").show();
+                $("#frmMedication").hide();
+            } else if (formType === "medication") {
+                var action = '/workflow/' + {{ id }} + '/' + currentTaskId + '/MedicationRequest';
+                $("#frmMedication").attr("action", action);
+                $("#frmMedication").show();
+                $("#frmObservation").hide();
+            }
+
             $(".modal-wrapper").fadeIn();
         });
+
         $(".modal-wrapper .close").click(function () {
             $(".modal-wrapper").fadeOut();
-        });       
+        });      
+        var observeDone = getUrlVars()["observeDone"];
+        var medicationDone = getUrlVars()["medicationDone"];
 
-      var observeDone = getUrlVars()["observeDone"];
-      if(observeDone == "True")
-      {        
-        $(".alert").slideToggle();
-        hideAlert();
-      }    
-      else if(observeDone!== undefined)
-        alert("Adding observation failed!");
-
-        function hideAlert(){
+        if (observeDone == "True") {
+            $(".alert").slideToggle();
             setTimeout(() => {
-            $(".alert").slideToggle()
-        }, 3000);
+                $(".alert").slideToggle();
+            }, 3000);
+        } else if (observeDone !== undefined) {
+            alert("Adding observation failed!");
         }
 
+        if (medicationDone == "True") {
+            $(".alertMedication").slideToggle();
+            setTimeout(() => {
+                $(".alertMedication").slideToggle();
+            }, 3000);
+        } else if (medicationDone !== undefined) {
+            alert("Adding medication failed!");
+        }
+
+                    
         $('#observationCode').change(()=>{
             var dataType = $('#observationCode :selected').attr('data-type');
             $('#hidValueType').val(dataType);
-        });       
+        });
+        $('#medicationCode').change(()=>{
+            var dataType = $('#medicationCode :selected').attr('data-type');
+            $('#medicationCode').val(dataType);
+        });          
     });
-        // Flag to check if "Prescribe Medications" is found
-        var hasPrescribeMedications = false;
-        var taskList = {{ task_list|tojson|safe }};
-        /*
-        // Parse the JSON string into a JavaScript object
-        console.log(taskList);
 
-        for (var i = 0; i < taskList.length; i++) {
-            for (var j = 0; j < taskList[i].identifier.length; j++) {
-        if (taskList[i].identifier[j].system === "taskName") {
-            var taskTitle = taskList[i].identifier[j].value;
-            // Do something with taskTitle (e.g., display it on the webpage)
-            console.log("Task Title: " + taskTitle);
-                }
-                }
-        }
-       // alert(JSON.stringify({{ task_list|tojson|safe }} ));
-        console.log(taskList); 
-        */
-        // Loop through the task_list to find "Prescribe Medications"
-        for (var i = 0; i < taskList.length; i++) {
-            var identifiers = taskList[i].identifier;
-            for (var j = 0; j < identifiers.length; j++) {
-                if (
-                    identifiers[j].system === 'taskName' &&
-                    identifiers[j].value === 'Prescribe Medications'
-
-                ) {
-                    hasPrescribeMedications = true;
-                    break;
-                }
-                else {
-                }
-            }
-            if (hasPrescribeMedications) {
-                break;
-            }
-        }
-
-        // Show/hide div elements based on conditions
-        if (hasPrescribeMedications) {
-            document.getElementById('myDiv').style.display = 'block';
-        } 
   
 </script>
 

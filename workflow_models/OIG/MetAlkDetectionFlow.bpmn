@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1wgfcux" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.15.2" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.19.0">
-  <bpmn:process id="metalkDetection" name="metalkDetection" isExecutable="true" camunda:historyTimeToLive="180">
+  <bpmn:process id="metalkDetection" name="metalkDetection" isExecutable="true" camunda:historyTimeToLive="120">
     <bpmn:startEvent id="StartEvent_1" name="Start">
       <bpmn:outgoing>Flow_0u9cu0x</bpmn:outgoing>
     </bpmn:startEvent>
@@ -61,16 +61,16 @@
         <di:waypoint x="340" y="145" />
         <di:waypoint x="340" y="247" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0phcxxk_di" bpmnElement="Flow_0phcxxk">
-        <di:waypoint x="390" y="287" />
-        <di:waypoint x="490" y="287" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0u9cu0x_di" bpmnElement="Flow_0u9cu0x">
         <di:waypoint x="188" y="287" />
         <di:waypoint x="290" y="287" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="266" y="159" width="24" height="14" />
         </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0phcxxk_di" bpmnElement="Flow_0phcxxk">
+        <di:waypoint x="390" y="287" />
+        <di:waypoint x="490" y="287" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_06avyt8_di" bpmnElement="Flow_06avyt8">
         <di:waypoint x="590" y="287" />
