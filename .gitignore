@@ -1,0 +1,6 @@
+.modified_models/*
+*modified_models*.bpmn
+*modified_models*.dmn
+*.pyc
+*.DS_Store
+
