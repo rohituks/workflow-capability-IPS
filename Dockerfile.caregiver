@@ -1,0 +1,7 @@
+# Dockerfile.caregiver
+FROM python:3.11
+WORKDIR /app
+COPY ./caregiver_application/requirements.txt /app/
+RUN pip install --no-cache-dir -r requirements.txt
+COPY ./caregiver_application /app/
+CMD ["python3", "main.py"]

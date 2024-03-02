@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  baseApiUrl: "http://localhost:8180/fhir/",
+  baseApiUrl: "http://fhir-server:8080/fhir/",
   planDefenition: "PlanDefinition"
 };
 

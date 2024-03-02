@@ -1,0 +1,48 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5432:5432"
+
+  fhir-server:
+    image: hapiproject/hapi:latest
+    volumes:
+      - "./fhir_jpa_config:/data"
+    environment:
+      SPRING_CONFIG_LOCATION: "file:///data/application.yaml"
+    ports:
+      - "8180:8080"
+    depends_on:
+      - postgres
+
+  camunda-engine:
+    build:
+      context: .
+      dockerfile: Dockerfile.camunda
+    ports:
+      - "8280:8080"
+    depends_on:
+      - fhir-server
+
+  caregiver-application:
+    build:
+      context: .
+      dockerfile: Dockerfile.caregiver
+    depends_on:
+      - camunda-engine
+    ports:
+      - "5001:5000"
+
+  workflow-capability-core:
+    build:
+      context: .
+      dockerfile: Dockerfile.workflow
+    environment:
+      SERVE_DEMOS: "y" # Set to "y" or "n"
+    ports:
+      - "5003:5003"
+    depends_on:
+      - fhir-server

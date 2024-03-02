@@ -5,7 +5,7 @@ import service_config as cfg
 from flask import Blueprint, render_template, request
 from cdr.cdr_fhir import Cdr
 
-cdr = Cdr("http://127.0.0.1:8180/fhir", {
+cdr = Cdr("http://fhir-server:8080/fhir", {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
     'Cache-Control': 'no-cache'})
@@ -106,17 +106,17 @@ def devtoolsexec(exec):
         print("Deleting CarePlans")
         care_plans = cdr.get_care_plans()
         for care_plan in care_plans:
-            response = requests.delete("http://localhost:8180/fhir/CarePlan/" + care_plan["id"])
+            response = requests.delete("http://fhir-server:8080/fhir/CarePlan/" + care_plan["id"])
     if exec == "del-pd":
         print("Deleting PlanDefintions")
         plan_defs = cdr.get_plan_definitions()
         for plan_def in plan_defs:
-            response = requests.delete("http://localhost:8180/fhir/PlanDefinition/" + plan_def["id"])
+            response = requests.delete("http://fhir-server:8080/fhir/PlanDefinition/" + plan_def["id"])
     if exec == "del-ts":
         print("Deleting Tasks")
         tasks = cdr.get_tasks()
         for task in tasks:
-            response = requests.delete("http://localhost:8180/fhir/Task/" + task["id"])
+            response = requests.delete("http://fhir-server:8080/fhir/Task/" + task["id"])
     return devtools()
 
 

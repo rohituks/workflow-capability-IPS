@@ -1,0 +1,5 @@
+# Dockerfile.camunda
+FROM openjdk:8-jdk-alpine
+WORKDIR /app
+COPY ./engine/camunda/target/camunda_engine-0.0.2-SNAPSHOT.jar /app/
+CMD ["java", "-jar", "camunda_engine-0.0.2-SNAPSHOT.jar","withAllDemos"]

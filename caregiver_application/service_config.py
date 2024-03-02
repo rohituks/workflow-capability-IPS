@@ -1,1 +1,1 @@
-wfc_url = 'http://localhost:5003'
+wfc_url = 'http://workflow-capability-core:5003'

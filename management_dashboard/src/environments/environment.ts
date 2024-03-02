@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  baseApiUrl: "http://localhost:8180/fhir/",
+  baseApiUrl: "http://fhir-server:8080/fhir/",
  };
 
 export const url = {

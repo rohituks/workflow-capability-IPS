@@ -23,7 +23,7 @@ class FhirObjectCreatorTest {
 
     @BeforeEach
     void setUp() {
-        objectCreator = new FhirObjectCreator("http://127.0.0.1:8180/fhir");
+        objectCreator = new FhirObjectCreator("http://fhir-server:8080");
         fhirDataResources = objectCreator.getFhirDataResources();
     }
 
